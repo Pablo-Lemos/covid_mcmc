@@ -19,6 +19,6 @@ Application of Bayesian Methods to COVID-19 data
 
 - https://github.com/CSSEGISandData/COVID-19
 
-## Related papers:
+## Related papers:
 
 - https://docs.google.com/document/d/1Gdj77DPoyXol_2c7yQ3iPq9eY7Ss-4FSmctAd2REAvU/edit?usp=sharing
