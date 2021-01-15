@@ -8,6 +8,10 @@ Application of Bayesian Methods to COVID-19 data
 - pandas
 - getdist (for plotting)
 
+## Data:
+
+- https://github.com/CSSEGISandData/COVID-19
+
 ## To make it work: 
 - First, you need to clone this repository: 
 ```
@@ -31,10 +35,6 @@ Get in touch if it does not work!
 - Document
 - Plotting script
 - Add R as a derived parameter
-
-## Data:
-
-- https://github.com/CSSEGISandData/COVID-19
 
 ## Related papers:
 
