@@ -28,7 +28,6 @@ cobaya-run inifiles/SIR_test.yaml
 ```
 Get in touch if it does not work!
 ## Main items to do:
-- Add real data
 - Add more complex models
 
 ## Smaller things to do: 
