@@ -31,8 +31,7 @@ Get in touch if it does not work!
 - Add more complex models
 
 ## Smaller things to do: 
-- Document
-- Plotting script
+- Improve read data in modulee
 - Add R as a derived parameter
 
 ## Related papers:
