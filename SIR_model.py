@@ -1,6 +1,7 @@
 import numpy as np
 import pandas
 import math
+import sys
 from scipy.integrate import odeint
 from cobaya.likelihood import Likelihood
 
@@ -120,20 +121,25 @@ def logp_SIR(beta, gamma):
     chi2_I = np.sum((I_theory - I_data)**2./(I_theory+epsilon)**2)
     return -0.5*(chi2_I)
 
+if __name__ == 'main':
+    print('This file is to be used with cobaya, not executed')
 
-if __name__ == '__main__':
+if __name__ == 'SIR_model':
     # Read the data
-    I_data, i_firstcase = read_data('./data/time_series_covid19_confirmed_global.csv', country = 'United Kingdom')
-    I_data = I_data[i_firstcase:]
+    try:
+        I_data, i_firstcase = read_data('./data/time_series_covid19_confirmed_global.csv', country = 'United Kingdom')
+        I_data = I_data[i_firstcase:]
 
-    # Total population, N.
-    N = 66.65*1e6 # Approximate population of the UK
-    # Number of days.
-    ndays = len(I_data)
-    # Initial number of infected and recovered individuals, I0 and R0.
-    I0, R0 = I_data[0], 0
-    # Everyone else, S0, is susceptible to infection initially.
-    S0 = N - I0 - R0
+        # Total population, N.
+        N = 66.65*1e6 # Approximate population of the UK
+        # Number of days.
+        ndays = len(I_data)
+        # Initial number of infected and recovered individuals, I0 and R0.
+        I0, R0 = I_data[0], 0
+        # Everyone else, S0, is susceptible to infection initially.
+        S0 = N - I0 - R0
 
+    except: 
+        print('Data file not found')
 
 

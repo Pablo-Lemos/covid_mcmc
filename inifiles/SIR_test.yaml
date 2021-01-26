@@ -2,7 +2,7 @@ packages_path: './SIR_model'
 
 likelihood:
   SIR: import_module('SIR_model').logp_SIR
-
+      
 params: 
   beta:
     prior:
