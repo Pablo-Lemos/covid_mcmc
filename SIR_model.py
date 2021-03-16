@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas
 import math
@@ -100,6 +101,20 @@ def integrate_SIR(S0, I0, R0, ndays, beta, gamma):
     S, I, R = ret.T
     return S, I, R
 
+def logfact(x):
+  result = np.zeros(len(x))
+  for i, xi in enumerate(x):
+    if xi < 2:
+      result[i] = np.log(1e-100)
+    else:
+      #result[i] = 0.
+      y = np.copy(xi)
+      while y>1:
+        result[i]+=np.log(y)
+        y-=1 
+      print(xi, result[i])
+  return result
+
 def logp_SIR(beta, gamma):
     ''' 
     Calculate the log likelihood for the SIR model given parameters
@@ -117,10 +132,18 @@ def logp_SIR(beta, gamma):
   
     _, I_theory, _= integrate_SIR(S0, I0, R0, ndays, beta, gamma)
     
-    epsilon = 1.e-10 # To avoid dividing by zero
-    chi2_I = np.sum((I_theory - I_data)**2./(I_theory+epsilon)**2)
-    return -0.5*(chi2_I)
+    #print(np.log(I_data[100:].astype(np.float32)))
+    #I_data = np.clip(I_data, 1e-50)
+    I_theory = np.clip(I_theory, a_min = 1e-20, a_max = None)
+    p = I_theory*np.log((I_data).astype(np.float32)) - I_data - I_theory*np.log(I_theory) + I_theory
+    #print(p)
+    #print(I_theory,np.log((I_data+1e-20).astype(np.float32)), I_data, I_theory*np.log(I_theory+1e-100),I_theory)
+    return - np.sum(p)
 
+
+    #return -0.5*(chi2_I)
+    #chi2_I = np.sum((I_theory - I_data)**2/I_theory) #./(I_theory+epsilon)**2)
+    
 if __name__ == 'main':
     print('This file is to be used with cobaya, not executed')
 
@@ -129,6 +152,7 @@ if __name__ == 'SIR_model':
     try:
         I_data, i_firstcase = read_data('./data/time_series_covid19_confirmed_global.csv', country = 'United Kingdom')
         I_data = I_data[i_firstcase:]
+        I_data = np.clip(I_data, a_min = 1e-20, a_max = None)
 
         # Total population, N.
         N = 66.65*1e6 # Approximate population of the UK
