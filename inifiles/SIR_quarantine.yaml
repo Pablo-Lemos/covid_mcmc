@@ -1,0 +1,52 @@
+packages_path: './SIR_model'
+
+likelihood:
+  SIR: import_module('SIR_model').logp_SIR
+      
+params: 
+  beta:
+    prior:
+      min: 0
+      max: 1.
+    #ref: 0.2
+    #proposal: 0.01
+  gamma:
+    prior:
+      min: 0
+      max: 1.
+    #ref: 0.1
+    #proposal: 0.01
+  gammap:
+    prior:
+      min: 0
+      max: 1.
+  q:
+    prior:
+      min: 0
+      max: 1.
+  qp:
+    prior:
+      min: 0
+      max: 1.
+  d: 0
+    #prior:
+    #  min: 0
+    #  max: 1.
+    #ref: 0.1
+    #proposal: 0.01
+  epsilon: 0
+    #prior:
+    #  min: 0
+    #  max: 1.
+    #ref: 0.1
+    #proposal: 0.01
+
+sampler:
+  #evaluate: 
+  #mcmc: 
+    #Rminus1_stop: 0.1
+    #max_tries: 100000
+  polychord:
+  #minimize:
+
+output: chains/quarantine
