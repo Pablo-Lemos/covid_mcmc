@@ -141,7 +141,7 @@ if __name__ == 'SIR_model':
     try:
         I_data, i_firstcase = read_data('./data/time_series_covid19_confirmed_global.csv', country = 'United Kingdom')
         I_data = I_data[i_firstcase:]
-        I_data = I_data[:150]
+        #I_data = I_data[:150]
         I_data = np.clip(I_data, a_min = 1e-20, a_max = None)
 
         # Total population, N.

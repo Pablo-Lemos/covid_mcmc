@@ -49,4 +49,4 @@ sampler:
   polychord:
   #minimize:
 
-output: chains/quarantine
+output: chains/quarantine_full
