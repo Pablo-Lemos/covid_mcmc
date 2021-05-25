@@ -42,7 +42,7 @@ def read_data(path, country = 'United Kingdom'):
 
     return data, firstcase
 
-def deriv_SIR(y, t, beta, gamma, d, epsilon, gammap, q, qp):
+def deriv_SIR(y, t, beta, gamma, d, epsilon, gammap, q):
     ''' The SIR model differential equations
 
     Parameters: 
@@ -60,19 +60,35 @@ def deriv_SIR(y, t, beta, gamma, d, epsilon, gammap, q, qp):
     dSdt, dIdt, dRdt: floats
       The derivatives of S, I, R with respect to time.
     '''
+    
+    # First lockdown
+    if 55<=t<=136:
+      qq = q
+    elif 279<=t<=306:
+      qq = q
+    elif t>=341:
+      qq = q
+    else:
+      qq = 0
+
+    #qq = q*(np.exp(-(t-95.5)**2/2./(40.5/2)**2) + np.exp(-(t-292.5)**2/2./(15/2)**2) + np.exp(-(t-393)**2/2./(52/2)**2))
 
     S, I, Q, R = y
     
     # Total population 
     N = S + I + R + Q
+    beta /=N
+    gammap = gamma
     
+    # From https://www.sciencedirect.com/science/article/pii/S2468042720300439
+    # For COVID 19, qprime can be set to zero
     dSdt = -beta * S * I - d*epsilon
-    dIdt = (1-qp)*beta * S * I  - gamma * I - q*I
-    dQdt = qp*beta * S * I + q * I - gammap*Q
+    dIdt = beta * S * I  - gamma * I - qq*I
+    dQdt = qq * I - gammap*Q
     dRdt = gamma * I + d*(1-epsilon) + gammap*Q
     return dSdt, dIdt, dQdt, dRdt
 
-def integrate_SIR(S0, I0, Q0, R0, ndays, beta, gamma, d, epsilon, gammap, q, qp):
+def integrate_SIR(S0, I0, Q0, R0, ndays, beta, gamma, d, epsilon, gammap, q):
     ''' Integrate the SIR model equations
   
     Parameters:
@@ -98,12 +114,12 @@ def integrate_SIR(S0, I0, Q0, R0, ndays, beta, gamma, d, epsilon, gammap, q, qp)
     y0 = S0, I0, Q0, R0
 
     # Integrate the SIR equations over the time grid, t.
-    ret = odeint(deriv_SIR, y0, t, args=(beta, gamma, d, epsilon, gammap, q, qp))
+    ret = odeint(deriv_SIR, y0, t, args=(beta, gamma, d, epsilon, gammap, q))
     S, I, Q, R = ret.T
     return S, I, Q, R
 
 
-def logp_SIR(beta, gamma, d, epsilon, gammap, q, qp):
+def logp_SIR(beta, gamma, d, epsilon, gammap, q):
     ''' 
     Calculate the log likelihood for the SIR model given parameters
 
@@ -117,21 +133,11 @@ def logp_SIR(beta, gamma, d, epsilon, gammap, q, qp):
     logp: float
       The log likelihood (-2*chisq)
     '''
-    _, I_theory, _, _= integrate_SIR(S0, I0, Q0, R0, ndays, beta, gamma, d, epsilon,  gammap, q, qp)
+    _, I_theory, _, _= integrate_SIR(S0, I0, Q0, R0, ndays, beta, gamma, d, epsilon,  gammap, q)
     
-    #print(np.log(I_data[100:].astype(np.float32)))
-    #I_data = np.clip(I_data, 1e-50)
     I_theory = np.clip(I_theory, a_min = 1e-20, a_max = None)
-    #p = I_theory*np.log((I_data).astype(np.float32)) - I_data - I_theory*np.log(I_theory) #+ I_theory
-    #print(I_data*np.log((I_theory).astype(np.float32)),I_theory )
     p = I_data*np.log((I_theory).astype(np.float32)) - I_theory - I_data.astype(np.float32)*np.log(I_data.astype(np.float32)) + I_data.astype(np.float32)
-    #print(p)
-    #print(p)
-    #print(I_theory,np.log((I_data+1e-20).astype(np.float32)), I_data, I_theory*np.log(I_theory+1e-100),I_theory)
     return np.sum(p)
-
-    #return -0.5*(chi2_I)
-    #chi2_I = np.sum((I_theory - I_data)**2/I_theory) #./(I_theory+epsilon)**2)
     
 if __name__ == 'main':
     print('This file is to be used with cobaya, not executed')
@@ -143,6 +149,10 @@ if __name__ == 'SIR_model':
         I_data = I_data[i_firstcase:]
         #I_data = I_data[:150]
         I_data = np.clip(I_data, a_min = 1e-20, a_max = None)
+
+        # Correct two big outliers
+        I_data[152] = I_data[151]
+        I_data[153] = I_data[154]
 
         # Total population, N.
         N = 66.65*1e6 # Approximate population of the UK
