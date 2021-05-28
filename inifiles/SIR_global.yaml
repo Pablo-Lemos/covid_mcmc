@@ -1,7 +1,7 @@
 packages_path: './SIR_model'
 
 likelihood:
-  SIR: import_module('SIR_model').logp_SIR_noq
+  SIR: import_module('SIR_model').logp_SIR_global
       
 params: 
   lbeta:
@@ -16,17 +16,20 @@ params:
       max: 5
     #ref: 0.1
     #proposal: 0.01
-  lmu: 
+  lmu:
     prior:
       min: -5
       max: 5
+  q:
+    prior:
+      min: -1
+      max: 1
   beta: 
     derived: "lambda lbeta: np.exp(lbeta)"
   gamma: 
     derived: "lambda lgamma: np.exp(lgamma)"
   mu: 
     derived: "lambda lmu: np.exp(lmu)"
-
 
 sampler:
   #evaluate: 
@@ -36,4 +39,4 @@ sampler:
   polychord:
   #minimize:
 
-output: chains/simple
+output: chains/quarantine_global
